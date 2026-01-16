@@ -2,6 +2,58 @@
 
 # Skill Seeker
 
+[TOC]
+
+## Fork Note
+
+本專案 fork 自 Skill Seekers，原設計目的在於透過 LLM 輔助進行技能搜尋、分析與任務引導。此版本在保留原有架構與使用情境的前提下，調整模型實作，改採 Google Gemini 方案以利實際使用。
+
+### 安裝說明 (Installation)
+推薦使用 `uv` 將本專案安裝為全域指令：
+```bash
+uv tool install --force .
+```
+
+**重新安裝 (更新程式碼後)：**
+當您修改原始碼後，需要使用 `--reinstall` 強制重新編譯安裝：
+```bash
+uv tool install --force --reinstall .
+```
+
+### MCP Configuration
+
+**1. Stdio 模式**
+將下列內容加入您的 MCP 設定檔：
+```json
+{
+  "mcpServers": {
+    "skill-seeker": {
+      "command": "skill-seekers-mcp",
+      "args": [],
+      "env": {}
+    }
+  }
+}
+```
+
+**2. HTTP 模式**
+**步驟 1：啟動伺服器** (請在終端機執行)
+```bash
+skill-seekers-mcp --http --port 3000
+```
+**步驟 2：設定編輯器** (在設定檔加入)
+```json
+{
+  "mcpServers": {
+    "skill-seeker": {
+      "url": "http://localhost:3000/sse"
+    }
+  }
+}
+```
+
+---
+
 [![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)](https://github.com/yusufkaraaslan/Skill_Seekers/releases/tag/v2.6.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -80,12 +132,12 @@ Skill Seeker is an automated tool that transforms documentation websites, GitHub
 - ✅ **Optional Dependencies** - Install only what you need
 - ✅ **100% Backward Compatible** - Existing Claude workflows unchanged
 
-| Platform | Format | Upload | Enhancement | API Key |
-|----------|--------|--------|-------------|---------|
-| **Claude AI** | ZIP + YAML | ✅ Auto | ✅ Yes | ANTHROPIC_API_KEY |
-| **Google Gemini** | tar.gz | ✅ Auto | ✅ Yes | GOOGLE_API_KEY |
-| **OpenAI ChatGPT** | ZIP + Vector Store | ✅ Auto | ✅ Yes | OPENAI_API_KEY |
-| **Generic Markdown** | ZIP | ❌ Manual | ❌ No | None |
+| Platform             | Format             | Upload   | Enhancement | API Key           |
+| -------------------- | ------------------ | -------- | ----------- | ----------------- |
+| **Claude AI**        | ZIP + YAML         | ✅ Auto   | ✅ Yes       | ANTHROPIC_API_KEY |
+| **Google Gemini**    | tar.gz             | ✅ Auto   | ✅ Yes       | GOOGLE_API_KEY    |
+| **OpenAI ChatGPT**   | ZIP + Vector Store | ✅ Auto   | ✅ Yes       | OPENAI_API_KEY    |
+| **Generic Markdown** | ZIP                | ❌ Manual | ❌ No        | None              |
 
 ```bash
 # Claude (default - no changes needed!)
@@ -394,12 +446,12 @@ See [Complete Feature Matrix](docs/FEATURE_MATRIX.md) for detailed platform and 
 
 ### Quick Platform Comparison
 
-| Feature | Claude | Gemini | OpenAI | Markdown |
-|---------|--------|--------|--------|----------|
-| Format | ZIP + YAML | tar.gz | ZIP + Vector | ZIP |
-| Upload | ✅ API | ✅ API | ✅ API | ❌ Manual |
-| Enhancement | ✅ Sonnet 4 | ✅ 2.0 Flash | ✅ GPT-4o | ❌ None |
-| All Skill Modes | ✅ | ✅ | ✅ | ✅ |
+| Feature         | Claude     | Gemini      | OpenAI       | Markdown |
+| --------------- | ---------- | ----------- | ------------ | -------- |
+| Format          | ZIP + YAML | tar.gz      | ZIP + Vector | ZIP      |
+| Upload          | ✅ API      | ✅ API       | ✅ API        | ❌ Manual |
+| Enhancement     | ✅ Sonnet 4 | ✅ 2.0 Flash | ✅ GPT-4o     | ❌ None   |
+| All Skill Modes | ✅          | ✅           | ✅            | ✅        |
 
 **Examples:**
 ```bash
@@ -909,18 +961,18 @@ skill-seekers install-agent output/react/ --agent cursor --dry-run
 
 ### Supported Agents
 
-| Agent | Path | Type |
-|-------|------|------|
-| **Claude Code** | `~/.claude/skills/` | Global |
-| **Cursor** | `.cursor/skills/` | Project |
-| **VS Code / Copilot** | `.github/skills/` | Project |
-| **Amp** | `~/.amp/skills/` | Global |
-| **Goose** | `~/.config/goose/skills/` | Global |
-| **OpenCode** | `~/.opencode/skills/` | Global |
-| **Letta** | `~/.letta/skills/` | Global |
-| **Aide** | `~/.aide/skills/` | Global |
-| **Windsurf** | `~/.windsurf/skills/` | Global |
-| **Neovate Code** | `~/.neovate/skills/` | Global |
+| Agent                 | Path                      | Type    |
+| --------------------- | ------------------------- | ------- |
+| **Claude Code**       | `~/.claude/skills/`       | Global  |
+| **Cursor**            | `.cursor/skills/`         | Project |
+| **VS Code / Copilot** | `.github/skills/`         | Project |
+| **Amp**               | `~/.amp/skills/`          | Global  |
+| **Goose**             | `~/.config/goose/skills/` | Global  |
+| **OpenCode**          | `~/.opencode/skills/`     | Global  |
+| **Letta**             | `~/.letta/skills/`        | Global  |
+| **Aide**              | `~/.aide/skills/`         | Global  |
+| **Windsurf**          | `~/.windsurf/skills/`     | Global  |
+| **Neovate Code**      | `~/.neovate/skills/`      | Global  |
 
 **Global paths** install to user's home directory (~/).
 **Project paths** install to current project's root directory.
@@ -948,13 +1000,13 @@ skill-seekers install-agent output/react/ --agent cursor
 
 ### Supported AI Agents
 
-| Agent | Transport | Setup Difficulty | Auto-Configured |
-|-------|-----------|------------------|-----------------|
-| **Claude Code** | stdio | Easy | ✅ Yes |
-| **VS Code + Cline** | stdio | Easy | ✅ Yes |
-| **Cursor** | HTTP | Medium | ✅ Yes |
-| **Windsurf** | HTTP | Medium | ✅ Yes |
-| **IntelliJ IDEA** | HTTP | Medium | ✅ Yes |
+| Agent               | Transport | Setup Difficulty | Auto-Configured |
+| ------------------- | --------- | ---------------- | --------------- |
+| **Claude Code**     | stdio     | Easy             | ✅ Yes           |
+| **VS Code + Cline** | stdio     | Easy             | ✅ Yes           |
+| **Cursor**          | HTTP      | Medium           | ✅ Yes           |
+| **Windsurf**        | HTTP      | Medium           | ✅ Yes           |
+| **IntelliJ IDEA**   | HTTP      | Medium           | ✅ Yes           |
 
 ### Quick Setup - All Agents at Once
 
@@ -1547,13 +1599,13 @@ skill-seekers package output/godot/
 
 ## 📋 Available Presets
 
-| Config | Framework | Description |
-|--------|-----------|-------------|
-| `godot.json` | Godot Engine | Game development |
-| `react.json` | React | UI framework |
-| `vue.json` | Vue.js | Progressive framework |
-| `django.json` | Django | Python web framework |
-| `fastapi.json` | FastAPI | Modern Python API |
+| Config              | Framework         | Description                |
+| ------------------- | ----------------- | -------------------------- |
+| `godot.json`        | Godot Engine      | Game development           |
+| `react.json`        | React             | UI framework               |
+| `vue.json`          | Vue.js            | Progressive framework      |
+| `django.json`       | Django            | Python web framework       |
+| `fastapi.json`      | FastAPI           | Modern Python API          |
 | `ansible-core.json` | Ansible Core 2.19 | Automation & configuration |
 
 ### Using Presets
@@ -1739,13 +1791,13 @@ skill-seekers scrape --config configs/godot.json
 
 ## 📈 Performance
 
-| Task | Time | Notes |
-|------|------|-------|
-| Scraping (sync) | 15-45 min | First time only, thread-based |
-| Scraping (async) | 5-15 min | 2-3x faster with --async flag |
-| Building | 1-3 min | Fast! |
-| Re-building | <1 min | With --skip-scrape |
-| Packaging | 5-10 sec | Final zip |
+| Task             | Time      | Notes                         |
+| ---------------- | --------- | ----------------------------- |
+| Scraping (sync)  | 15-45 min | First time only, thread-based |
+| Scraping (async) | 5-15 min  | 2-3x faster with --async flag |
+| Building         | 1-3 min   | Fast!                         |
+| Re-building      | <1 min    | With --skip-scrape            |
+| Packaging        | 5-10 sec  | Final zip                     |
 
 ## ✅ Summary
 
