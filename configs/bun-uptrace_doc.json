@@ -1,0 +1,54 @@
+{
+  "name": "bun-uptrace",
+  "description": "Bun is a SQL-first database client for Go. This skill covers the comprehensive guide, querying, models, migrations, and PostgreSQL specific features.",
+  "base_url": "https://bun.uptrace.dev/",
+  "selectors": {
+    "main_content": ".theme-default-content",
+    "title": "h1",
+    "code_blocks": "div[class*=\"language-\"]",
+    "navigation": ".navbar",
+    "sidebar": ".sidebar"
+  },
+  "url_patterns": {
+    "include": [
+      "/guide/",
+      "/postgres/"
+    ],
+    "exclude": []
+  },
+  "categories": {
+    "getting_started": [
+      "guide",
+      "golang-orm",
+      "drivers",
+      "models"
+    ],
+    "querying": [
+      "queries",
+      "query-",
+      "placeholders",
+      "relations"
+    ],
+    "essentials": [
+      "starter-kit",
+      "migrations",
+      "fixtures",
+      "debugging"
+    ],
+    "advanced": [
+      "running-bun",
+      "performance",
+      "transactions",
+      "soft-deletes",
+      "hooks",
+      "custom-types",
+      "cursor-pagination",
+      "complex-queries",
+      "pg-migration"
+    ],
+    "postgres": [
+      "postgres"
+    ]
+  },
+  "max_pages": 100
+}
