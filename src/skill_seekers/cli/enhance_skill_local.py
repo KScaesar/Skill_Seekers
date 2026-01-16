@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-SKILL.md Enhancement Script (Local - Using Claude Code)
-Opens a new terminal with Claude Code to enhance SKILL.md, then reports back.
-No API key needed - uses your existing Claude Code Max plan!
+SKILL.md Enhancement Script (Local - Using Gemini CLI)
+Opens a new terminal with Gemini CLI to enhance SKILL.md, then reports back.
+No API key needed - uses your existing Gemini CLI installation!
 
 Usage:
     # Headless mode (default - runs in foreground, waits for completion)
@@ -556,7 +556,7 @@ After writing, the file SKILL.md should:
 
         # Create a shell script to run in the terminal
         shell_script = f'''#!/bin/bash
-claude {prompt_file}
+cat {prompt_file} | gemini -y
 echo ""
 echo "✅ Enhancement complete!"
 echo "Press any key to close..."
@@ -632,7 +632,7 @@ rm {prompt_file}
         import time
         from pathlib import Path
 
-        print("✨ Running Claude Code enhancement (headless mode)...")
+        print("✨ Running Gemini CLI enhancement (headless mode)...")
         print(f"   Timeout: {timeout} seconds ({timeout//60} minutes)")
         print()
 
@@ -644,15 +644,17 @@ rm {prompt_file}
         start_time = time.time()
 
         try:
-            # Run claude command directly (this WAITS for completion)
-            # Use --dangerously-skip-permissions to bypass ALL permission checks
-            print(f"   Running: claude --dangerously-skip-permissions {prompt_file}")
+            # Run gemini command directly (this WAITS for completion)
+            # Read prompt content for stdin
+            prompt_content = Path(prompt_file).read_text(encoding='utf-8')
+            print(f"   Running: gemini -y (with prompt via stdin)")
             print("   ⏳ Please wait...")
             print(f"   Working directory: {self.skill_dir}")
             print()
 
             result = subprocess.run(
-                ['claude', '--dangerously-skip-permissions', prompt_file],
+                ['gemini', '-y'],
+                input=prompt_content,
                 capture_output=True,
                 text=True,
                 timeout=timeout,
@@ -681,14 +683,14 @@ rm {prompt_file}
 
                         return True
                     else:
-                        print(f"⚠️  Claude finished but SKILL.md was not updated")
+                        print(f"⚠️  Gemini finished but SKILL.md was not updated")
                         print(f"   Initial: mtime={initial_mtime}, size={initial_size}")
                         print(f"   Final:   mtime={new_mtime}, size={new_size}")
                         print(f"   This might indicate an error during enhancement")
                         print()
                         # Show last 20 lines of stdout for debugging
                         if result.stdout:
-                            print("   Last output from Claude:")
+                            print("   Last output from Gemini:")
                             lines = result.stdout.strip().split('\n')[-20:]
                             for line in lines:
                                 print(f"   | {line}")
@@ -698,7 +700,7 @@ rm {prompt_file}
                     print(f"❌ SKILL.md not found after enhancement")
                     return False
             else:
-                print(f"❌ Claude Code returned error (exit code: {result.returncode})")
+                print(f"❌ Gemini CLI returned error (exit code: {result.returncode})")
                 if result.stderr:
                     print(f"   Error: {result.stderr[:200]}")
                 return False
@@ -709,8 +711,8 @@ rm {prompt_file}
             print(f"   Timeout limit: {timeout} seconds")
             print()
             print("   Possible reasons:")
-            print("   - Skill is very large (many references)")
-            print("   - Claude is taking longer than usual")
+            print("   - Skill has very large references")
+            print("   - Gemini is taking longer than usual")
             print("   - Network issues")
             print()
             print("   Try:")
@@ -727,10 +729,10 @@ rm {prompt_file}
             return False
 
         except FileNotFoundError:
-            print("❌ 'claude' command not found")
+            print("❌ 'gemini' command not found")
             print()
-            print("   Make sure Claude Code CLI is installed:")
-            print("   See: https://docs.claude.com/claude-code")
+            print("   Make sure Gemini CLI is installed:")
+            print("   npm install -g @anthropic-ai/gemini-cli")
             print()
             print("   Try terminal mode instead: --interactive-enhancement")
 
@@ -789,13 +791,14 @@ rm {prompt_file}
                     prompt_file = f.name
                     f.write(prompt)
 
-                self.write_status("running", "Running Claude Code enhancement...", progress=0.5)
+                self.write_status("running", "Running Gemini CLI enhancement...", progress=0.5)
 
                 # Run enhancement
                 if headless:
                     # Run headless (subprocess.run - blocking in thread)
                     result = subprocess.run(
-                        ['claude', prompt_file],
+                        ['gemini', '-y'],
+                        input=prompt,
                         capture_output=True,
                         text=True,
                         timeout=timeout
@@ -810,7 +813,7 @@ rm {prompt_file}
                     if result.returncode == 0:
                         self.write_status("completed", "Enhancement completed successfully!", progress=1.0)
                     else:
-                        self.write_status("failed", error=f"Claude returned error: {result.returncode}")
+                        self.write_status("failed", error=f"Gemini returned error: {result.returncode}")
                 else:
                     # Terminal mode in background doesn't make sense
                     self.write_status("failed", error="Terminal mode not supported in background")
@@ -906,11 +909,12 @@ try:
         prompt_file = f.name
         f.write(prompt)
 
-    write_status("running", "Running Claude Code...", progress=0.5)
+    write_status("running", "Running Gemini CLI...", progress=0.5)
 
-    # Run Claude
+    # Run Gemini with prompt via stdin
     result = subprocess.run(
-        ['claude', prompt_file],
+        ['gemini', '-y'],
+        input=prompt,
         capture_output=True,
         text=True,
         timeout={timeout}
@@ -926,7 +930,7 @@ try:
         write_status("completed", "Enhancement completed successfully!", progress=1.0)
         sys.exit(0)
     else:
-        write_status("failed", error=f"Claude returned error: {{result.returncode}}")
+        write_status("failed", error=f"Gemini returned error: {{result.returncode}}")
         sys.exit(1)
 
 except subprocess.TimeoutExpired:
@@ -1001,7 +1005,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Enhance a skill with Claude Code (local)",
+        description="Enhance a skill with Gemini CLI (local)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

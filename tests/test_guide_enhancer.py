@@ -3,8 +3,8 @@
 Comprehensive tests for GuideEnhancer (C3.3 AI Enhancement)
 
 Tests dual-mode AI enhancement for how-to guides:
-- API mode (Claude API)
-- LOCAL mode (Claude Code CLI)
+- API mode (Gemini API)
+- LOCAL mode (Gemini CLI)
 - Auto mode detection
 - All 5 enhancement methods
 """
@@ -28,10 +28,10 @@ class TestGuideEnhancerModeDetection:
 
     def test_auto_mode_with_api_key(self):
         """Test auto mode detects API when key present and library available"""
-        with patch.dict(os.environ, {'ANTHROPIC_API_KEY': 'sk-ant-test'}):
-            with patch('skill_seekers.cli.guide_enhancer.ANTHROPIC_AVAILABLE', True):
-                with patch('skill_seekers.cli.guide_enhancer.anthropic', create=True) as mock_anthropic:
-                    mock_anthropic.Anthropic = Mock()
+        with patch.dict(os.environ, {'GOOGLE_API_KEY': 'sk-ant-test'}):
+            with patch('skill_seekers.cli.guide_enhancer.GOOGLE_GENAI_AVAILABLE', True):
+                with patch('skill_seekers.cli.guide_enhancer.genai', create=True) as mock_genai:
+                    mock_genai.Client = Mock()
                     enhancer = GuideEnhancer(mode='auto')
                     # Will be 'api' if library available, otherwise 'local' or 'none'
                     assert enhancer.mode in ['api', 'local', 'none']
@@ -39,8 +39,8 @@ class TestGuideEnhancerModeDetection:
     def test_auto_mode_without_api_key(self):
         """Test auto mode falls back to LOCAL when no API key"""
         with patch.dict(os.environ, {}, clear=True):
-            if 'ANTHROPIC_API_KEY' in os.environ:
-                del os.environ['ANTHROPIC_API_KEY']
+            if 'GOOGLE_API_KEY' in os.environ:
+                del os.environ['GOOGLE_API_KEY']
 
             enhancer = GuideEnhancer(mode='auto')
             assert enhancer.mode in ['local', 'none']
@@ -60,10 +60,10 @@ class TestGuideEnhancerModeDetection:
         enhancer = GuideEnhancer(mode='none')
         assert enhancer.mode == 'none'
 
-    def test_claude_cli_check(self):
-        """Test Claude CLI availability check"""
+    def test_gemini_cli_check(self):
+        """Test Gemini CLI availability check"""
         enhancer = GuideEnhancer(mode='local')
-        # Should either detect claude or fall back to api/none
+        # Should either detect gemini or fall back to api/none
         assert enhancer.mode in ['local', 'api', 'none']
 
 
@@ -86,7 +86,7 @@ class TestGuideEnhancerStepDescriptions:
         result = enhancer.enhance_step_descriptions(steps)
         assert result == []
 
-    @patch.object(GuideEnhancer, '_call_claude_api')
+    @patch.object(GuideEnhancer, '_call_gemini_api')
     def test_enhance_step_descriptions_api_mode(self, mock_call):
         """Test step descriptions with API mode"""
         mock_call.return_value = json.dumps({
@@ -99,10 +99,10 @@ class TestGuideEnhancerStepDescriptions:
             ]
         })
 
-        with patch.dict(os.environ, {'ANTHROPIC_API_KEY': 'sk-ant-test'}):
-            with patch('skill_seekers.cli.guide_enhancer.ANTHROPIC_AVAILABLE', True):
-                with patch('skill_seekers.cli.guide_enhancer.anthropic', create=True) as mock_anthropic:
-                    mock_anthropic.Anthropic = Mock()
+        with patch.dict(os.environ, {'GOOGLE_API_KEY': 'sk-ant-test'}):
+            with patch('skill_seekers.cli.guide_enhancer.GOOGLE_GENAI_AVAILABLE', True):
+                with patch('skill_seekers.cli.guide_enhancer.genai', create=True) as mock_genai:
+                    mock_genai.Client = Mock()
                     enhancer = GuideEnhancer(mode='api')
                     if enhancer.mode != 'api':
                         pytest.skip("API mode not available")
@@ -142,7 +142,7 @@ class TestGuideEnhancerTroubleshooting:
         result = enhancer.enhance_troubleshooting(guide_data)
         assert result == []
 
-    @patch.object(GuideEnhancer, '_call_claude_api')
+    @patch.object(GuideEnhancer, '_call_gemini_api')
     def test_enhance_troubleshooting_api_mode(self, mock_call):
         """Test troubleshooting with API mode"""
         mock_call.return_value = json.dumps({
@@ -156,10 +156,10 @@ class TestGuideEnhancerTroubleshooting:
             ]
         })
 
-        with patch.dict(os.environ, {'ANTHROPIC_API_KEY': 'sk-ant-test'}):
-            with patch('skill_seekers.cli.guide_enhancer.ANTHROPIC_AVAILABLE', True):
-                with patch('skill_seekers.cli.guide_enhancer.anthropic', create=True) as mock_anthropic:
-                    mock_anthropic.Anthropic = Mock()
+        with patch.dict(os.environ, {'GOOGLE_API_KEY': 'sk-ant-test'}):
+            with patch('skill_seekers.cli.guide_enhancer.GOOGLE_GENAI_AVAILABLE', True):
+                with patch('skill_seekers.cli.guide_enhancer.genai', create=True) as mock_genai:
+                    mock_genai.Client = Mock()
                     enhancer = GuideEnhancer(mode='api')
                     if enhancer.mode != 'api':
                         pytest.skip("API mode not available")
@@ -197,7 +197,7 @@ class TestGuideEnhancerPrerequisites:
         result = enhancer.enhance_prerequisites(prereqs)
         assert result == []
 
-    @patch.object(GuideEnhancer, '_call_claude_api')
+    @patch.object(GuideEnhancer, '_call_gemini_api')
     def test_enhance_prerequisites_api_mode(self, mock_call):
         """Test prerequisites with API mode"""
         mock_call.return_value = json.dumps({
@@ -215,10 +215,10 @@ class TestGuideEnhancerPrerequisites:
             ]
         })
 
-        with patch.dict(os.environ, {'ANTHROPIC_API_KEY': 'sk-ant-test'}):
-            with patch('skill_seekers.cli.guide_enhancer.ANTHROPIC_AVAILABLE', True):
-                with patch('skill_seekers.cli.guide_enhancer.anthropic', create=True) as mock_anthropic:
-                    mock_anthropic.Anthropic = Mock()
+        with patch.dict(os.environ, {'GOOGLE_API_KEY': 'sk-ant-test'}):
+            with patch('skill_seekers.cli.guide_enhancer.GOOGLE_GENAI_AVAILABLE', True):
+                with patch('skill_seekers.cli.guide_enhancer.genai', create=True) as mock_genai:
+                    mock_genai.Client = Mock()
                     enhancer = GuideEnhancer(mode='api')
                     if enhancer.mode != 'api':
                         pytest.skip("API mode not available")
@@ -245,7 +245,7 @@ class TestGuideEnhancerNextSteps:
         result = enhancer.enhance_next_steps(guide_data)
         assert result == []
 
-    @patch.object(GuideEnhancer, '_call_claude_api')
+    @patch.object(GuideEnhancer, '_call_gemini_api')
     def test_enhance_next_steps_api_mode(self, mock_call):
         """Test next steps with API mode"""
         mock_call.return_value = json.dumps({
@@ -256,10 +256,10 @@ class TestGuideEnhancerNextSteps:
             ]
         })
 
-        with patch.dict(os.environ, {'ANTHROPIC_API_KEY': 'sk-ant-test'}):
-            with patch('skill_seekers.cli.guide_enhancer.ANTHROPIC_AVAILABLE', True):
-                with patch('skill_seekers.cli.guide_enhancer.anthropic', create=True) as mock_anthropic:
-                    mock_anthropic.Anthropic = Mock()
+        with patch.dict(os.environ, {'GOOGLE_API_KEY': 'sk-ant-test'}):
+            with patch('skill_seekers.cli.guide_enhancer.GOOGLE_GENAI_AVAILABLE', True):
+                with patch('skill_seekers.cli.guide_enhancer.genai', create=True) as mock_genai:
+                    mock_genai.Client = Mock()
                     enhancer = GuideEnhancer(mode='api')
                     if enhancer.mode != 'api':
                         pytest.skip("API mode not available")
@@ -284,7 +284,7 @@ class TestGuideEnhancerUseCases:
         result = enhancer.enhance_use_cases(guide_data)
         assert result == []
 
-    @patch.object(GuideEnhancer, '_call_claude_api')
+    @patch.object(GuideEnhancer, '_call_gemini_api')
     def test_enhance_use_cases_api_mode(self, mock_call):
         """Test use cases with API mode"""
         mock_call.return_value = json.dumps({
@@ -294,10 +294,10 @@ class TestGuideEnhancerUseCases:
             ]
         })
 
-        with patch.dict(os.environ, {'ANTHROPIC_API_KEY': 'sk-ant-test'}):
-            with patch('skill_seekers.cli.guide_enhancer.ANTHROPIC_AVAILABLE', True):
-                with patch('skill_seekers.cli.guide_enhancer.anthropic', create=True) as mock_anthropic:
-                    mock_anthropic.Anthropic = Mock()
+        with patch.dict(os.environ, {'GOOGLE_API_KEY': 'sk-ant-test'}):
+            with patch('skill_seekers.cli.guide_enhancer.GOOGLE_GENAI_AVAILABLE', True):
+                with patch('skill_seekers.cli.guide_enhancer.genai', create=True) as mock_genai:
+                    mock_genai.Client = Mock()
                     enhancer = GuideEnhancer(mode='api')
                     if enhancer.mode != 'api':
                         pytest.skip("API mode not available")
@@ -336,7 +336,7 @@ class TestGuideEnhancerFullWorkflow:
         assert result['title'] == guide_data['title']
         assert len(result['steps']) == 2
 
-    @patch.object(GuideEnhancer, '_call_claude_api')
+    @patch.object(GuideEnhancer, '_call_gemini_api')
     def test_enhance_guide_api_mode_success(self, mock_call):
         """Test successful full guide enhancement via API"""
         mock_call.return_value = json.dumps({
@@ -359,10 +359,10 @@ class TestGuideEnhancerFullWorkflow:
             'use_cases': ['Automate documentation extraction']
         })
 
-        with patch.dict(os.environ, {'ANTHROPIC_API_KEY': 'sk-ant-test'}):
-            with patch('skill_seekers.cli.guide_enhancer.ANTHROPIC_AVAILABLE', True):
-                with patch('skill_seekers.cli.guide_enhancer.anthropic', create=True) as mock_anthropic:
-                    mock_anthropic.Anthropic = Mock()
+        with patch.dict(os.environ, {'GOOGLE_API_KEY': 'sk-ant-test'}):
+            with patch('skill_seekers.cli.guide_enhancer.GOOGLE_GENAI_AVAILABLE', True):
+                with patch('skill_seekers.cli.guide_enhancer.genai', create=True) as mock_genai:
+                    mock_genai.Client = Mock()
                     enhancer = GuideEnhancer(mode='api')
                     if enhancer.mode != 'api':
                         pytest.skip("API mode not available")
@@ -413,10 +413,10 @@ class TestGuideEnhancerFullWorkflow:
 
 
 class TestGuideEnhancerLocalMode:
-    """Test LOCAL mode (Claude Code CLI)"""
+    """Test LOCAL mode (Gemini CLI)"""
 
     @patch('subprocess.run')
-    def test_call_claude_local_success(self, mock_run):
+    def test_call_gemini_local_success(self, mock_run):
         """Test successful LOCAL mode call"""
         mock_run.return_value = MagicMock(
             returncode=0,
@@ -432,21 +432,21 @@ class TestGuideEnhancerLocalMode:
         enhancer = GuideEnhancer(mode='local')
         if enhancer.mode == 'local':
             prompt = "Test prompt"
-            result = enhancer._call_claude_local(prompt)
+            result = enhancer._call_gemini_local(prompt)
 
             assert result is not None
             assert mock_run.called
 
     @patch('subprocess.run')
-    def test_call_claude_local_timeout(self, mock_run):
+    def test_call_gemini_local_timeout(self, mock_run):
         """Test LOCAL mode timeout handling"""
         from subprocess import TimeoutExpired
-        mock_run.side_effect = TimeoutExpired('claude', 300)
+        mock_run.side_effect = TimeoutExpired('gemini', 300)
 
         enhancer = GuideEnhancer(mode='local')
         if enhancer.mode == 'local':
             prompt = "Test prompt"
-            result = enhancer._call_claude_local(prompt)
+            result = enhancer._call_gemini_local(prompt)
 
             assert result is None
 

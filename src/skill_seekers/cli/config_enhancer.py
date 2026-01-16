@@ -26,11 +26,11 @@ from dataclasses import dataclass, field
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Optional anthropic import
-ANTHROPIC_AVAILABLE = False
+# Optional google genai import
+GOOGLE_GENAI_AVAILABLE = False
 try:
-    import anthropic
-    ANTHROPIC_AVAILABLE = True
+    from google import genai
+    GOOGLE_GENAI_AVAILABLE = True
 except ImportError:
     pass
 
@@ -60,8 +60,8 @@ class ConfigEnhancer:
     AI enhancement for configuration extraction results.
 
     Supports dual-mode operation:
-    - API mode: Uses Claude API (requires ANTHROPIC_API_KEY)
-    - LOCAL mode: Uses Claude Code CLI (no API key needed)
+    - API mode: Uses Gemini API (requires GOOGLE_API_KEY)
+    - LOCAL mode: Uses Gemini CLI (no API key needed)
     - AUTO mode: Automatically detects best available mode
     """
 
@@ -73,11 +73,11 @@ class ConfigEnhancer:
             mode: Enhancement mode - "api", "local", or "auto" (default)
         """
         self.mode = self._detect_mode(mode)
-        self.api_key = os.environ.get('ANTHROPIC_API_KEY')
+        self.api_key = os.environ.get('GOOGLE_API_KEY')
         self.client = None
 
-        if self.mode == "api" and ANTHROPIC_AVAILABLE and self.api_key:
-            self.client = anthropic.Anthropic(api_key=self.api_key)
+        if self.mode == "api" and GOOGLE_GENAI_AVAILABLE and self.api_key:
+            self.client = genai.Client(api_key=self.api_key)
 
     def _detect_mode(self, requested_mode: str) -> str:
         """
@@ -93,11 +93,11 @@ class ConfigEnhancer:
             return requested_mode
 
         # Auto-detect
-        if os.environ.get('ANTHROPIC_API_KEY') and ANTHROPIC_AVAILABLE:
-            logger.info("🤖 AI enhancement: API mode (Claude API detected)")
+        if os.environ.get('GOOGLE_API_KEY') and GOOGLE_GENAI_AVAILABLE:
+            logger.info("🤖 AI enhancement: API mode (Gemini API detected)")
             return "api"
         else:
-            logger.info("🤖 AI enhancement: LOCAL mode (using Claude Code CLI)")
+            logger.info("🤖 AI enhancement: LOCAL mode (using Gemini CLI)")
             return "local"
 
     def enhance_config_result(self, result: Dict) -> Dict:
@@ -122,7 +122,7 @@ class ConfigEnhancer:
     # =========================================================================
 
     def _enhance_via_api(self, result: Dict) -> Dict:
-        """Enhance configs using Claude API"""
+        """Enhance configs using Gemini API"""
         if not self.client:
             logger.error("❌ API mode requested but no API key available")
             return result
@@ -131,19 +131,15 @@ class ConfigEnhancer:
             # Create enhancement prompt
             prompt = self._create_enhancement_prompt(result)
 
-            # Call Claude API
-            logger.info("📡 Calling Claude API for config analysis...")
-            response = self.client.messages.create(
-                model="claude-sonnet-4-20250514",
-                max_tokens=8000,
-                messages=[{
-                    "role": "user",
-                    "content": prompt
-                }]
+            # Call Gemini API
+            logger.info("📡 Calling Gemini API for config analysis...")
+            response = self.client.models.generate_content(
+                model="gemini-3-flash-preview",
+                contents=prompt
             )
 
             # Parse response
-            enhanced_result = self._parse_api_response(response.content[0].text, result)
+            enhanced_result = self._parse_api_response(response.text, result)
             logger.info("✅ API enhancement complete")
             return enhanced_result
 
@@ -240,7 +236,7 @@ Focus on actionable insights that help developers understand and improve their c
     # =========================================================================
 
     def _enhance_via_local(self, result: Dict) -> Dict:
-        """Enhance configs using Claude Code CLI"""
+        """Enhance configs using Gemini CLI"""
         try:
             # Create temporary prompt file
             with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
@@ -250,11 +246,11 @@ Focus on actionable insights that help developers understand and improve their c
             # Create output file path
             output_file = prompt_file.parent / f"{prompt_file.stem}_enhanced.json"
 
-            logger.info("🖥️  Launching Claude Code CLI for config analysis...")
+            logger.info("🖥️  Launching Gemini CLI for config analysis...")
             logger.info("⏱️  This will take 30-60 seconds...")
 
-            # Run Claude Code CLI
-            result_data = self._run_claude_cli(prompt_file, output_file)
+            # Run Gemini CLI
+            result_data = self._run_gemini_cli(prompt_file, output_file)
 
             # Clean up
             prompt_file.unlink()
@@ -275,7 +271,7 @@ Focus on actionable insights that help developers understand and improve their c
             return result
 
     def _create_local_prompt(self, result: Dict) -> str:
-        """Create prompt file for Claude Code CLI"""
+        """Create prompt file for Gemini CLI"""
         config_files = result.get('config_files', [])
 
         # Format config data for Claude
@@ -332,19 +328,23 @@ Focus on actionable insights:
 """
         return prompt
 
-    def _run_claude_cli(self, prompt_file: Path, output_file: Path) -> Optional[Dict]:
-        """Run Claude Code CLI and wait for completion"""
+    def _run_gemini_cli(self, prompt_file: Path, output_file: Path) -> Optional[Dict]:
+        """Run Gemini CLI and wait for completion"""
         try:
-            # Run claude command
+            # Read prompt content for stdin
+            prompt_content = prompt_file.read_text(encoding='utf-8')
+
+            # Run gemini command with prompt via stdin
             result = subprocess.run(
-                ['claude', str(prompt_file)],
+                ['gemini', '-y'],
+                input=prompt_content,
                 capture_output=True,
                 text=True,
                 timeout=300  # 5 minute timeout
             )
 
             if result.returncode != 0:
-                logger.error(f"❌ Claude CLI failed: {result.stderr}")
+                logger.error(f"❌ Gemini CLI failed: {result.stderr}")
                 return None
 
             # Try to find output file (Claude might save it with different name)
@@ -372,10 +372,10 @@ Focus on actionable insights:
             return None
 
         except subprocess.TimeoutExpired:
-            logger.error("❌ Claude CLI timeout (5 minutes)")
+            logger.error("❌ Gemini CLI timeout (5 minutes)")
             return None
         except Exception as e:
-            logger.error(f"❌ Error running Claude CLI: {e}")
+            logger.error(f"❌ Error running Gemini CLI: {e}")
             return None
 
 

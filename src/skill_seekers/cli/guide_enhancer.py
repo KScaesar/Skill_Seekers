@@ -2,8 +2,8 @@
 AI Enhancement for How-To Guides (C3.3)
 
 This module provides comprehensive AI enhancement for how-to guides with dual-mode support:
-- API mode: Uses Claude API (requires ANTHROPIC_API_KEY)
-- LOCAL mode: Uses Claude Code CLI (no API key needed)
+- API mode: Uses Gemini API (requires GOOGLE_API_KEY)
+- LOCAL mode: Uses Gemini CLI (no API key needed)
 
 Provides 5 automatic enhancements:
 1. Step Descriptions - Natural language explanations (not just syntax)
@@ -46,13 +46,13 @@ else:
 
 logger = logging.getLogger(__name__)
 
-# Conditional import for Anthropic API
+# Conditional import for Google GenAI API
 try:
-    import anthropic
-    ANTHROPIC_AVAILABLE = True
+    from google import genai
+    GOOGLE_GENAI_AVAILABLE = True
 except ImportError:
-    ANTHROPIC_AVAILABLE = False
-    logger.debug("Anthropic library not available - API mode will be unavailable")
+    GOOGLE_GENAI_AVAILABLE = False
+    logger.debug("Google GenAI library not available - API mode will be unavailable")
 
 
 @dataclass
@@ -68,8 +68,8 @@ class GuideEnhancer:
     AI enhancement for how-to guides with dual-mode support.
 
     Modes:
-    - api: Uses Claude API (requires ANTHROPIC_API_KEY)
-    - local: Uses Claude Code CLI (no API key needed)
+    - api: Uses Gemini API (requires GOOGLE_API_KEY)
+    - local: Uses Gemini CLI (no API key needed)
     - auto: Automatically detect best mode
     """
 
@@ -81,30 +81,30 @@ class GuideEnhancer:
             mode: Enhancement mode - "api", "local", or "auto"
         """
         self.mode = self._detect_mode(mode)
-        self.api_key = os.environ.get('ANTHROPIC_API_KEY')
+        self.api_key = os.environ.get('GOOGLE_API_KEY')
         self.client = None
 
         if self.mode == "api":
-            if ANTHROPIC_AVAILABLE and self.api_key:
-                self.client = anthropic.Anthropic(api_key=self.api_key)
+            if GOOGLE_GENAI_AVAILABLE and self.api_key:
+                self.client = genai.Client(api_key=self.api_key)
                 logger.info("✨ GuideEnhancer initialized in API mode")
             else:
-                logger.warning("⚠️  API mode requested but anthropic library not available or no API key")
+                logger.warning("⚠️  API mode requested but google-genai library not available or no API key")
                 self.mode = "none"
         elif self.mode == "local":
-            # Check if claude CLI is available
-            if not self._check_claude_cli():
-                logger.warning("⚠️  Claude CLI not found - falling back to API mode")
+            # Check if gemini CLI is available
+            if not self._check_gemini_cli():
+                logger.warning("⚠️  Gemini CLI not found - falling back to API mode")
                 self.mode = "api"
-                if ANTHROPIC_AVAILABLE and self.api_key:
-                    self.client = anthropic.Anthropic(api_key=self.api_key)
+                if GOOGLE_GENAI_AVAILABLE and self.api_key:
+                    self.client = genai.Client(api_key=self.api_key)
                 else:
                     logger.warning("⚠️  API fallback also unavailable")
                     self.mode = "none"
             else:
                 logger.info("✨ GuideEnhancer initialized in LOCAL mode")
         else:
-            logger.warning("⚠️  No AI enhancement available (no API key or Claude CLI)")
+            logger.warning("⚠️  No AI enhancement available (no API key or Gemini CLI)")
             self.mode = "none"
 
     def _detect_mode(self, requested_mode: str) -> str:
@@ -119,19 +119,19 @@ class GuideEnhancer:
         """
         if requested_mode == "auto":
             # Prefer API if key available, else LOCAL
-            if os.environ.get('ANTHROPIC_API_KEY') and ANTHROPIC_AVAILABLE:
+            if os.environ.get('GOOGLE_API_KEY') and GOOGLE_GENAI_AVAILABLE:
                 return "api"
-            elif self._check_claude_cli():
+            elif self._check_gemini_cli():
                 return "local"
             else:
                 return "none"
         return requested_mode
 
-    def _check_claude_cli(self) -> bool:
-        """Check if Claude Code CLI is available."""
+    def _check_gemini_cli(self) -> bool:
+        """Check if Gemini CLI is available."""
         try:
             result = subprocess.run(
-                ['claude', '--version'],
+                ['gemini', '--version'],
                 capture_output=True,
                 text=True,
                 timeout=5
@@ -330,14 +330,14 @@ class GuideEnhancer:
             AI response text or None if failed
         """
         if self.mode == "api":
-            return self._call_claude_api(prompt, max_tokens)
+            return self._call_gemini_api(prompt, max_tokens)
         elif self.mode == "local":
-            return self._call_claude_local(prompt)
+            return self._call_gemini_local(prompt)
         return None
 
-    def _call_claude_api(self, prompt: str, max_tokens: int = 4000) -> Optional[str]:
+    def _call_gemini_api(self, prompt: str, max_tokens: int = 4000) -> Optional[str]:
         """
-        Call Claude API.
+        Call Gemini API.
 
         Args:
             prompt: Prompt text
@@ -350,19 +350,18 @@ class GuideEnhancer:
             return None
 
         try:
-            response = self.client.messages.create(
-                model="claude-sonnet-4-20250514",
-                max_tokens=max_tokens,
-                messages=[{"role": "user", "content": prompt}]
+            response = self.client.models.generate_content(
+                model="gemini-3-flash-preview",
+                contents=prompt
             )
-            return response.content[0].text
+            return response.text
         except Exception as e:
-            logger.warning(f"⚠️  Claude API call failed: {e}")
+            logger.warning(f"⚠️  Gemini API call failed: {e}")
             return None
 
-    def _call_claude_local(self, prompt: str) -> Optional[str]:
+    def _call_gemini_local(self, prompt: str) -> Optional[str]:
         """
-        Call Claude Code CLI.
+        Call Gemini CLI.
 
         Args:
             prompt: Prompt text
@@ -376,9 +375,10 @@ class GuideEnhancer:
                 f.write(prompt)
                 prompt_file = f.name
 
-            # Run claude CLI
+            # Run gemini CLI with prompt via stdin
             result = subprocess.run(
-                ['claude', prompt_file],
+                ['gemini', '-y'],
+                input=prompt,
                 capture_output=True,
                 text=True,
                 timeout=300  # 5 min timeout
@@ -390,11 +390,11 @@ class GuideEnhancer:
             if result.returncode == 0:
                 return result.stdout
             else:
-                logger.warning(f"⚠️  Claude CLI failed: {result.stderr}")
+                logger.warning(f"⚠️  Gemini CLI failed: {result.stderr}")
                 return None
 
         except (subprocess.TimeoutExpired, Exception) as e:
-            logger.warning(f"⚠️  Claude CLI execution failed: {e}")
+            logger.warning(f"⚠️  Gemini CLI execution failed: {e}")
             return None
 
     # === Prompt Creation Methods ===
@@ -410,7 +410,7 @@ class GuideEnhancer:
             Enhanced guide data
         """
         prompt = self._create_enhancement_prompt(guide_data)
-        response = self._call_claude_api(prompt)
+        response = self._call_gemini_api(prompt)
 
         if not response:
             return guide_data
@@ -428,7 +428,7 @@ class GuideEnhancer:
             Enhanced guide data
         """
         prompt = self._create_enhancement_prompt(guide_data)
-        response = self._call_claude_local(prompt)
+        response = self._call_gemini_local(prompt)
 
         if not response:
             return guide_data
