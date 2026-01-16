@@ -62,10 +62,16 @@ For more information: https://github.com/yusufkaraaslan/Skill_Seekers
         """
     )
 
+    import importlib.metadata
+    try:
+        version = importlib.metadata.version("skill-seekers")
+    except importlib.metadata.PackageNotFoundError:
+        version = "unknown"
+
     parser.add_argument(
         "--version",
         action="version",
-        version="%(prog)s 2.5.1"
+        version=f"%(prog)s {version}"
     )
 
     subparsers = parser.add_subparsers(
