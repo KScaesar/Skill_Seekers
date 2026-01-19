@@ -9,9 +9,7 @@
       "selectors": {
         "main_content": ".theme-default-content",
         "title": "h1",
-        "code_blocks": "div[class*=\"language-\"]",
-        "navigation": ".navbar",
-        "sidebar": ".sidebar"
+        "code_blocks": "div[class*=\"language-\"]"
       },
       "url_patterns": {
         "include": [
