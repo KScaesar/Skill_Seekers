@@ -108,6 +108,7 @@ Documentation = "https://github.com/yusufkaraaslan/Skill_Seekers#readme"
 [project.scripts]
 # Main unified CLI
 skill-seekers = "skill_seekers.cli.main:main"
+skill-seekers-mcp = "skill_seekers.mcp.server_fastmcp:main"
 
 # Individual tool entry points
 skill-seekers-scrape = "skill_seekers.cli.doc_scraper:main"
