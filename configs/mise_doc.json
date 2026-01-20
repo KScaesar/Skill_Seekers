@@ -1,0 +1,45 @@
+{
+  "name": "mise",
+  "description": "mise cli 適合需要頻繁切換工具版本與多語言環境的情境。它可以選擇將工具版本、環境變數與任務定義集中於單一設定檔，進入目錄即可自動生效，並在執行任務時套用正確的版本與設定，減少手動操作與環境不一致問題，提升整體開發體驗。",
+  "base_url": "https://mise.jdx.dev/",
+  "start_urls": ["https://mise.jdx.dev/demo.html"],
+  "selectors": {
+    "main_content": ".vp-doc",
+    "title": "h1",
+    "code_blocks": "pre code"
+  },
+  "url_patterns": {
+    "include": [],
+    "exclude": [
+      "/lang/",
+      "/dev-tools/backends/",
+      "/configuration/",
+      "/continuous-integration.html",
+      "/team.html",
+      "/contributing.html",
+      "/external-resources.html",
+      "/how-i-use-mise.html",
+      "/about.html",
+      ".json"
+    ]
+  },
+  "categories": {
+    "getting_started": [
+      "/demo.html",
+      "/getting-started.html",
+      "/walkthrough.html",
+      "/installing-mise.html",
+      "/ide-integration.html",
+      "/configuration.html",
+      "/glossary.html",
+      "/troubleshooting.html"
+    ],
+    "dev_tools": ["/dev-tools/", "registry.html"],
+    "environments": ["/environments/"],
+    "tasks": ["/tasks/"],
+    "plugins": ["/plugins/"],
+    "cli": ["/cli/"],
+    "advanced": ["/faq", "/mise-cookbook/", "/advanced/"]
+  },
+  "max_pages": 200
+}
