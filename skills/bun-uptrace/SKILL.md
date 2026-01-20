@@ -10,6 +10,7 @@ Bun is a SQL-first database client for Go. Unlike traditional ORMs that hide SQL
 ## When to Use This Skill
 
 Use this skill when you need to:
+
 - **Set up Database Connections**: Configure Bun for PostgreSQL, MySQL, or SQLite.
 - **Write Queries**: Build complex SQL queries using Go's type-safe builder (Select, Insert, Update, Delete).
 - **Manage Migrations**: Create and run schema migrations using Go code or SQL files.
@@ -20,9 +21,11 @@ Use this skill when you need to:
 ## Quick Reference
 
 ### 1. Database Connection
-*From `other.md`*
+
+Based on [other.md](references/other.md)
 
 **PostgreSQL Connection:**
+
 ```go
 import (
 	"database/sql"
@@ -38,6 +41,7 @@ db := bun.NewDB(sqldb, pgdialect.New())
 ```
 
 **SQLite Connection (In-Memory):**
+
 ```go
 import (
     "database/sql"
@@ -51,7 +55,8 @@ db := bun.NewDB(sqldb, sqlitedialect.New())
 ```
 
 ### 2. Complex Query Building (CTEs)
-*From `other.md` - Demonstrating how Bun maps SQL constructs to Go*
+
+Based on [other.md](references/other.md) - Demonstrating how Bun maps SQL constructs to Go
 
 ```go
 // Define subqueries
@@ -77,9 +82,11 @@ err := db.NewSelect().
 ```
 
 ### 3. Migrations
-*From `getting_started.md`*
+
+Based on [getting_started.md](references/getting_started.md)
 
 **Go-based Migration Structure:**
+
 ```go
 package migrations
 
@@ -106,6 +113,7 @@ func init() {
 ```
 
 **SQL-based Migration (`.up.sql`):**
+
 ```sql
 CREATE TABLE users (id serial PRIMARY KEY, name text);
 
@@ -115,7 +123,8 @@ INSERT INTO users (name) VALUES ('Alice');
 ```
 
 ### 4. Model Hooks
-*From `getting_started.md` - Automatically updating timestamps*
+
+Based on [getting_started.md](references/getting_started.md) - Automatically updating timestamps
 
 ```go
 type Model struct {
@@ -139,7 +148,8 @@ func (m *Model) BeforeAppendModel(ctx context.Context, query bun.Query) error {
 ```
 
 ### 5. PostgreSQL Arrays
-*From `postgres.md`*
+
+Based on [postgres.md](references/postgres.md)
 
 ```go
 import "github.com/uptrace/bun/dialect/pgdialect"
@@ -162,7 +172,8 @@ q.Where("tags @> ?", pgdialect.Array([]string{"foo"}))
 ```
 
 ### 6. Debugging Queries
-*From `other.md` and `getting_started.md`*
+
+Based on [other.md](references/other.md) and [getting_started.md](references/getting_started.md)
 
 ```go
 import "github.com/uptrace/bun/extra/bundebug"
@@ -184,36 +195,34 @@ This skill synthesizes information from the following files in `references/`:
 ## Working with This Skill
 
 ### For Beginners
+
 1. **Installation**: Refer to `getting_started.md` for `go get` commands.
 2. **First Query**: Look at `other.md` for simple `NewSelect()` examples.
 3. **Debug**: Always enable `bundebug` (see Quick Reference) when learning to see the generated SQL.
 
 ### For Intermediate Users (Migrations & Modeling)
+
 1. **Migrations**: `getting_started.md` details the migration system. Remember to use transaction-safe migrations where possible.
 2. **Hooks**: Use `BeforeAppendModel` for automatic timestamps, but avoid putting complex business logic in hooks (per `getting_started.md`).
 3. **Relationships**: See `other.md` for `With` (CTE) and relationship handling.
 
 ### For Advanced Users (Performance & PostgreSQL)
+
 1. **Tuning**: Check `advanced.md` for `postgresql.conf` recommendations based on CPU/RAM.
 2. **Bulk Data**: Use `CopyFrom` / `CopyTo` from `postgres.md` for large datasets instead of standard inserts.
 3. **Zero-Downtime**: Follow the strategies in `essentials.md` (e.g., splitting long transactions, avoiding `NOT NULL` on new columns).
 
 ## Known Discrepancies & Notes
 
-- **Migration Files**: While `getting_started.md` describes the standard migration file format (timestamp_name), `essentials.md` focuses on the *strategy* (locking, batching) rather than the syntax. Combine both: use the syntax from Getting Started with the safety rules from Essentials.
+- **Migration Files**: While `getting_started.md` describes the standard migration file format (timestamp_name), `essentials.md` focuses on the _strategy_ (locking, batching) rather than the syntax. Combine both: use the syntax from Getting Started with the safety rules from Essentials.
 - **Configuration**: Performance tuning values in `advanced.md` (e.g., `shared_buffers = 20-40% of RAM`) are standard PostgreSQL recommendations and not specific to Bun, but are critical for production deployments.
 
 ## Resources
 
 ### references/
+
 - `getting_started.md`: Setup, Migrations, Hooks.
 - `other.md`: Dialects, Complex Queries.
 - `postgres.md`: PG-specific types and tools.
 - `advanced.md`: Server configuration.
 - `essentials.md`: Operational best practices.
-
-### scripts/
-(Placeholder for automation scripts)
-
-### assets/
-(Placeholder for templates)

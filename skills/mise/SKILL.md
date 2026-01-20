@@ -107,8 +107,8 @@ outputs = ["target/debug/app"]
 
 For more detailed information, refer to the detailed markdown files in the `references/` directory:
 
-- **[advanced.md](references/advanced.md)**: Advanced configuration, cookbooks for specific languages, and shell integration tips.
-- **[cli.md](references/cli.md)**: Complete reference for all CLI commands and flags.
-- **[plugins.md](references/plugins.md)**: Guide to using and creating plugins (compatible with asdf).
-- **[other.md](references/other.md)**: Miscellaneous documentation and FAQs.
-- **[index.md](references/index.md)**: Documentation index.
+- [advanced.md](references/advanced.md): Advanced configuration, cookbooks for specific languages, and shell integration tips.
+- [cli.md](references/cli.md): Complete reference for all CLI commands and flags. **Try `mise [COMMAND] -h` first before consulting this reference.**
+- [plugins.md](references/plugins.md): Guide to using and creating plugins (compatible with asdf).
+- [other.md](references/other.md): Miscellaneous documentation and FAQs.
+- [index.md](references/index.md): Documentation index.

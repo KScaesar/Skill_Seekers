@@ -10,6 +10,7 @@ Atlas is a language-independent tool for managing and migrating database schemas
 ## When to Use This Skill
 
 This skill should be triggered when:
+
 - **Defining Schema as Code**: Managing database schemas using HCL, SQL, or ORM definitions
 - **Planning Migrations**: Automatically generating migration scripts for schema changes (versioned workflow)
 - **Applying Schema Changes**: Deploying declarative or versioned migrations to databases
@@ -22,7 +23,8 @@ This skill should be triggered when:
 
 ### Installation
 
-*From: getting_started.md*
+Based on [getting_started.md](references/getting_started.md)
+
 ```shell
 curl -sSf https://atlasgo.sh | sh
 ```
@@ -30,7 +32,8 @@ curl -sSf https://atlasgo.sh | sh
 ### Connection URLs
 
 **Pattern 4: PostgreSQL URL**
-*From: concepts.md*
+Based on [concepts.md](references/concepts.md)
+
 ```shell
 # Single schema with SSL disabled
 postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable
@@ -40,7 +43,8 @@ postgres://postgres:pass@localhost:5432/database
 ```
 
 **Pattern 5: MySQL URL**
-*From: concepts.md*
+Based on [concepts.md](references/concepts.md)
+
 ```shell
 # Single database
 mysql://root:pass@localhost:3306/test
@@ -50,7 +54,8 @@ mysql://root:pass@localhost:3306/
 ```
 
 **Pattern 6: SQLite URL**
-*From: concepts.md*
+Based on [concepts.md](references/concepts.md)
+
 ```shell
 # File-based
 sqlite://file.db
@@ -60,19 +65,21 @@ sqlite://file?mode=memory&_fk=1
 ```
 
 **Pattern 7: Docker Dev Database**
-*From: schema_as_code.md*
+Based on [schema_as_code.md](references/schema_as_code.md)
+
 ```shell
 # MySQL dev database
 --dev-url "docker://mysql/8/dev"
 
-# PostgreSQL dev database  
+# PostgreSQL dev database
 --dev-url "docker://postgres/15/dev?search_path=public"
 ```
 
 ### Versioned Migrations Workflow
 
 **Pattern 8: Generate Migration from Schema**
-*From: versioned_workflow.md*
+Based on [versioned_workflow.md](references/versioned_workflow.md)
+
 ```shell
 # From HCL schema
 atlas migrate diff create_users \
@@ -88,7 +95,8 @@ atlas migrate diff add_column \
 ```
 
 **Pattern 9: Apply Versioned Migrations**
-*From: versioned_workflow.md*
+Based on [versioned_workflow.md](references/versioned_workflow.md)
+
 ```shell
 # Apply pending migrations
 atlas migrate apply \
@@ -102,7 +110,8 @@ atlas migrate apply \
 ```
 
 **Pattern 10: Push to Atlas Registry**
-*From: versioned_workflow.md*
+Based on [versioned_workflow.md](references/versioned_workflow.md)
+
 ```shell
 # Login to Atlas
 atlas login
@@ -115,7 +124,8 @@ atlas migrate push app \
 ### Declarative Workflow
 
 **Pattern 11: Apply Declarative Changes**
-*From: declarative_workflow.md*
+Based on [declarative_workflow.md](references/declarative_workflow.md)
+
 ```shell
 # Apply from HCL schema
 atlas schema apply \
@@ -123,7 +133,7 @@ atlas schema apply \
   --to "file://schema.hcl" \
   --dev-url "docker://postgres/15/dev?search_path=public"
 
-# Apply from SQL schema  
+# Apply from SQL schema
 atlas schema apply \
   --url "mysql://root:pass@:3306/test" \
   --to "file://schema.sql" \
@@ -131,7 +141,8 @@ atlas schema apply \
 ```
 
 **Pattern 12: Pre-plan Schema Changes**
-*From: declarative_workflow.md*
+Based on [declarative_workflow.md](references/declarative_workflow.md)
+
 ```shell
 # Generate and approve a migration plan
 atlas schema plan \
@@ -146,7 +157,8 @@ atlas schema apply --env prod
 ### Schema Inspection & Export
 
 **Pattern 13: Inspect Database Schema**
-*From: schema_as_code.md*
+Based on [schema_as_code.md](references/schema_as_code.md)
+
 ```shell
 # Inspect to HCL
 atlas schema inspect \
@@ -160,7 +172,8 @@ atlas schema inspect \
 ```
 
 **Pattern 14: Schema Diff**
-*From: declarative_workflow.md*
+Based on [declarative_workflow.md](references/declarative_workflow.md)
+
 ```shell
 # Compare two database states
 atlas schema diff \
@@ -172,7 +185,8 @@ atlas schema diff \
 ### Migration Troubleshooting
 
 **Pattern 15: Check Migration Status**
-*From: versioned_workflow.md*
+Based on [versioned_workflow.md](references/versioned_workflow.md)
+
 ```shell
 # View current migration status
 atlas migrate status \
@@ -181,7 +195,8 @@ atlas migrate status \
 ```
 
 **Pattern 16: Down Migrations (Rollback)**
-*From: versioned_workflow.md*
+Based on [versioned_workflow.md](references/versioned_workflow.md)
+
 ```shell
 # Revert last migration
 atlas migrate down \
@@ -200,7 +215,7 @@ atlas migrate down --dry-run \
 
 ### Two Workflows
 
-Atlas supports two distinct migration workflows (*from: getting_started.md, versioned_workflow.md, declarative_workflow.md*):
+Atlas supports two distinct migration workflows (Based on [getting_started.md](references/getting_started.md), [versioned_workflow.md](references/versioned_workflow.md), [declarative_workflow.md](references/declarative_workflow.md)):
 
 1. **Versioned Migrations** (Change-based)
    - Define explicit migration files (.sql scripts) applied in sequence
@@ -216,19 +231,21 @@ Atlas supports two distinct migration workflows (*from: getting_started.md, vers
 
 ### Connection URLs
 
-Atlas uses standard URL format for database connections (*from: concepts.md*):
+Atlas uses standard URL format for database connections (Based on [concepts.md](references/concepts.md)):
 
 ```
 driver://[username[:password]@]address/[schema|database][?param1=value1&...&paramN=valueN]
 ```
 
 **Key URL Components:**
+
 - **Driver**: `postgres`, `mysql`, `maria`, `sqlite`, `sqlserver`, `clickhouse`, etc.
 - **Credentials**: Username and password (URL-encoded if containing special characters)
 - **Schema Scope**: Determines if Atlas operates on single schema or multiple schemas
 - **Query Parameters**: Database-specific options (e.g., `sslmode`, `search_path`)
 
 **Special URL Schemes:**
+
 - `docker://mysql/8/dev` - Ephemeral dev database in Docker
 - `file://schema.sql` - Load schema from file
 - `atlas://app` - Load from Atlas Registry
@@ -236,9 +253,10 @@ driver://[username[:password]@]address/[schema|database][?param1=value1&...&para
 
 ### Schema as Code
 
-Atlas supports multiple formats for defining database schemas (*from: schema_as_code.md*):
+Atlas supports multiple formats for defining database schemas (Based on [schema_as_code.md](references/schema_as_code.md)):
 
 **SQL Format:**
+
 ```sql
 CREATE TABLE users (
   id bigint PRIMARY KEY,
@@ -254,6 +272,7 @@ CREATE TABLE posts (
 ```
 
 **HCL Format:**
+
 ```hcl
 schema "public" {}
 
@@ -273,12 +292,13 @@ table "users" {
 ```
 
 **ORM Integration:**
+
 - SQLAlchemy, Django, GORM, Ent, Prisma, TypeORM, Sequelize, etc.
 - Define schema in ORM, let Atlas generate migrations
 
 ### Dev Database
 
-The Dev Database is a temporary database used by Atlas for computation and validation (*from: schema_as_code.md*):
+The Dev Database is a temporary database used by Atlas for computation and validation (Based on [schema_as_code.md](references/schema_as_code.md)):
 
 - Required when working with SQL schemas or certain HCL features
 - Can be ephemeral Docker container: `docker://mysql/8/dev`
@@ -289,7 +309,7 @@ The Dev Database is a temporary database used by Atlas for computation and valid
 
 ### Creating Migrations
 
-Generate migration files automatically from schema definitions (*from: versioned_workflow.md*):
+Generate migration files automatically from schema definitions (Based on [versioned_workflow.md](references/versioned_workflow.md)):
 
 ```shell
 # Initial migration
@@ -330,9 +350,10 @@ atlas migrate apply \
 
 ### Migration Troubleshooting
 
-Common scenarios (*from: versioned_workflow.md*):
+Common scenarios (Based on [versioned_workflow.md](references/versioned_workflow.md)):
 
 **1. Check Status:**
+
 ```shell
 atlas migrate status \
   --url "mysql://root:pass@:3306/test" \
@@ -340,6 +361,7 @@ atlas migrate status \
 ```
 
 **2. Handle Schema Drift:**
+
 ```shell
 # Compare actual vs expected state
 atlas schema diff \
@@ -349,8 +371,9 @@ atlas schema diff \
 ```
 
 **3. Rollback Migrations:**
+
 ```shell
-# Revert last migration  
+# Revert last migration
 atlas migrate down \
   --url "mysql://root:pass@:3306/test" \
   --dir "file://migrations" \
@@ -366,7 +389,7 @@ atlas migrate down \
 3. Review and approve
 4. Apply to database
 
-(*from: declarative_workflow.md*)
+(Based on [declarative_workflow.md](references/declarative_workflow.md))
 
 ```shell
 # Apply changes
@@ -378,7 +401,7 @@ atlas schema apply \
 
 ### Pre-planning (Pro Feature)
 
-Pre-plan migrations for review before applying (*from: declarative_workflow.md*):
+Pre-plan migrations for review before applying (Based on [declarative_workflow.md](references/declarative_workflow.md)):
 
 ```shell
 # Generate plan
@@ -393,7 +416,7 @@ atlas schema apply --env prod
 
 ### Review Policies
 
-Control when manual approval is required (*from: declarative_workflow.md*):
+Control when manual approval is required (Based on [declarative_workflow.md](references/declarative_workflow.md)):
 
 ```hcl
 lint {
@@ -407,7 +430,7 @@ lint {
 
 ### Setup CI/CD
 
-Atlas integrates with major CI/CD platforms (*from: versioned_workflow.md, declarative_workflow.md*):
+Atlas integrates with major CI/CD platforms (Based on [versioned_workflow.md](references/versioned_workflow.md), [declarative_workflow.md](references/declarative_workflow.md)):
 
 - GitHub Actions
 - GitLab CI Components
@@ -416,6 +439,7 @@ Atlas integrates with major CI/CD platforms (*from: versioned_workflow.md, decla
 - Azure DevOps Pipelines
 
 **Common CI Workflow:**
+
 1. **Lint migrations** - Detect destructive changes
 2. **Run tests** - Validate schema logic
 3. **Push to registry** - Store approved migrations
@@ -434,11 +458,12 @@ Atlas integrates with major CI/CD platforms (*from: versioned_workflow.md, decla
     dir: file://migrations
 ```
 
-## Reference Files
+## Other Reference Materials
 
 This skill contains 13 categorized reference files located in `references/`:
 
 **Core References (Primary Focus):**
+
 - `concepts.md` - Connection URLs, database scopes, SSL configuration
 - `getting_started.md` - Installation, quickstart, first migrations
 - `versioned_workflow.md` - Migration planning, applying, troubleshooting
@@ -446,6 +471,7 @@ This skill contains 13 categorized reference files located in `references/`:
 - `schema_as_code.md` - HCL/SQL schemas, inspection, ORM integration
 
 **Additional References:**
+
 - `guides.md` - 70 practical guides (database-specific, CI/CD, deployment)
 - `testing.md` - Schema and migration testing
 - `integrations.md` - GitHub Actions, Kubernetes, Terraform
@@ -474,6 +500,7 @@ This skill contains 13 categorized reference files located in `references/`:
 ### For Specific Databases
 
 Search `guides.md` for database-specific guides:
+
 - PostgreSQL features (partial indexes, serial columns, RLS)
 - MySQL/MariaDB specifics
 - SQL Server, ClickHouse, Oracle, Spanner, Snowflake
