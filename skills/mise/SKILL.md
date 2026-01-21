@@ -7,6 +7,12 @@ description: mise cli 適合需要頻繁切換工具版本與多語言環境的�
 
 Mise is a comprehensive tool for managing development environments. It handles tool version management, environment variable configuration, and task execution, replacing multiple single-purpose tools with a unified experience.
 
+install:
+
+```sh
+curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+```
+
 ## Getting Started
 
 Based on [Getting Started](references/getting_started.md).
@@ -103,12 +109,64 @@ outputs = ["target/debug/app"]
 - **Watch**: Re-run tasks on file changes (`mise watch`).
 - **Arguments**: Pass arguments to tasks using the usage spec.
 
+## IDE Integration & Shell Configuration
+
+Understanding the difference between interactive and non-interactive shells is key to configuring IDEs correctly.
+
+### 1. Interactive Shells (Terminal)
+
+This is your standard terminal usage where you type commands.
+
+- **Mechanism**: Uses shell hooks to dynamically load environments.
+- **Config File**: `~/.zshrc` (Zsh) or `~/.bashrc` (Bash).
+- **Setup**:
+  ```bash
+  eval "$(mise activate zsh)"
+  ```
+
+### 2. Non-Interactive Shells (IDEs, Scripts, GUI Apps)
+
+IDEs and background processes often run in non-interactive mode and do not load `.zshrc`. Using `activate` here will often fail.
+
+- **Mechanism**: Uses Shims (executables that intercept commands) to route to the correct tool version.
+- **Config File**: `~/.zprofile` (Zsh) or `~/.profile` (Bash).
+- **Setup**:
+  Add the shims directory to your PATH _before_ system paths.
+  ```sh
+  # ~/.zprofile
+  eval "$(mise activate zsh --shims)"
+
+  # ~/.bash_profile or ~/.bash_login or ~/.profile
+  eval "$(mise activate bash --shims)"
+  ```
+
+### Summary Comparison
+
+| Feature     | Interactive Terminal | IDE / Scripts / Non-Interactive |
+| :---------- | :------------------- | :------------------------------ |
+| Method      | `mise activate`      | Shims / `mise exec`             |
+| Config File | `~/.zshrc`           | `~/.zprofile` / `~/.profile`    |
+| Mechanism   | Shell Hooks (Prompt) | System PATH intercept           |
+
+### 3. IDE Specific Recommendations
+
+- **VS Code**:
+  - **Best Practice**: Install the official Mise extension (publisher: `jdx`). It handles the environment injection automatically.
+
+- **JetBrains (IntelliJ, PyCharm)**:
+  - **Option A**: Install the Mise plugin.
+  - **Option B**: Manually set the Project SDK/Interpreter path to the shim executable found in `~/.local/share/mise/shims/`.
+
 ## Other Reference Materials
 
 For more detailed information, refer to the detailed markdown files in the `references/` directory:
 
-- [advanced.md](references/advanced.md): Advanced configuration, cookbooks for specific languages, and shell integration tips.
-- [cli.md](references/cli.md): Complete reference for all CLI commands and flags. **Try `mise [COMMAND] -h` first before consulting this reference.**
-- [plugins.md](references/plugins.md): Guide to using and creating plugins (compatible with asdf).
-- [other.md](references/other.md): Miscellaneous documentation and FAQs.
+- [getting_started.md](references/getting_started.md): Installation, basic usage, IDE integration, and troubleshooting.
+- [environments.md](references/environments.md): Managing environment variables, secrets, and configuration files.
+- [dev_tools.md](references/dev_tools.md): Tool version management, backends, shims, and lockfiles.
+- [tasks.md](references/tasks.md): Definition and execution of tasks, dependencies, and file watching.
+- [advanced.md](references/advanced.md): Advanced configuration, cookbooks for specific languages (Node.js, C++, etc.), and CI/CD tips.
+- [cli.md](references/cli.md): Complete reference for all CLI commands and flags. Try `mise [COMMAND] -h` first.
+- [plugins.md](references/plugins.md): CLI reference for managing plugins (install, update, uninstall).
+- [other.md](references/other.md): Plugin architecture, guide to creating custom plugins, and direnv migration/deprecation.
 - [index.md](references/index.md): Documentation index.
