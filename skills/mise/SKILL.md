@@ -10,7 +10,7 @@ Mise is a comprehensive tool for managing development environments. It handles t
 install:
 
 ```sh
-curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+curl https://mise.run | sudo MISE_INSTALL_PATH=/usr/local/bin/mise sh
 ```
 
 ## Getting Started
