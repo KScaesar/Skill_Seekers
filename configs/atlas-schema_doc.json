@@ -1,0 +1,79 @@
+{
+  "name": "atlas-schema",
+  "description": "Atlas is a language-independent tool for managing and migrating database schemas using modern DevOps principles.",
+  "base_url": "https://atlasgo.io",
+  "start_urls": [
+    "https://atlasgo.io/docs"
+  ],
+  "selectors": {
+    "main_content": "article, .theme-doc-markdown",
+    "title": "h1",
+    "code_blocks": "pre code"
+  },
+  "url_patterns": {
+    "include": [],
+    "exclude": [
+      "/blog",
+      "/case-studies",
+      "/trust",
+      "/use-cases",
+      "/pricing",
+      "/contributing",
+      "/support",
+      "/about",
+      "/tags",
+      "/changelog"
+    ]
+  },
+  "categories": {
+    "getting_started": [
+      "docs",
+      "getting-started",
+      "atlas-vs-others"
+    ],
+    "guides": [
+      "guides/"
+    ],
+    "declarative_workflow": [
+      "declarative/"
+    ],
+    "versioned_workflow": [
+      "versioned/"
+    ],
+    "linting": [
+      "lint/"
+    ],
+    "schema_as_code": [
+      "inspect",
+      "atlas-schema",
+      "orms"
+    ],
+    "testing": [
+      "testing/"
+    ],
+    "concepts": [
+      "concepts/"
+    ],
+    "cloud": [
+      "cloud/"
+    ],
+    "monitoring": [
+      "monitoring/"
+    ],
+    "integrations": [
+      "integrations/"
+    ],
+    "hcl_reference": [
+      "hcl/"
+    ],
+    "reference": [
+      "cli-reference",
+      "features",
+      "community-edition",
+      "custom-drivers",
+      "cli/"
+    ]
+  },
+  "rate_limit": 1,
+  "max_pages": 120
+}
