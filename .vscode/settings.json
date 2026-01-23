@@ -1,4 +1,11 @@
 {
-    "python-envs.defaultEnvManager": "ms-python.python:system",
-    "python-envs.pythonProjects": []
+    "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "python-envs.pythonProjects": [],
+    "debug.javascript.defaultRuntimeExecutable": {
+        "pwa-node": "/home/caesar/.local/share/mise/shims/node"
+    },
+    "go.goroot": "/home/caesar/.local/share/mise/installs/go/1.25.6",
+    "go.alternateTools": {
+        "go": "/home/caesar/.local/share/mise/shims/go"
+    }
 }
